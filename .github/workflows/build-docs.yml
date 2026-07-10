@@ -19,7 +19,6 @@ jobs:
       - name: Install System Dependencies
         run: |
           sudo apt-get update
-          # Adding graphviz and inkscape to convert .svg images natively
           sudo apt-get install -y texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texlive-xetex latexmk fonts-freefont-ttf graphviz inkscape
 
       - name: Install Python Dependencies
@@ -27,13 +26,13 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install blurb sphinx
 
-      - name: Build LaTeX Files Directly
+      - name: Build End-to-End PDF Natively
         run: |
-          sphinx-build -b latex Doc Doc/build/latex
-
-      - name: Compile PDF Documents
-        run: |
-          make -C Doc/build/latex PDFLATEX=xelatex
+          # Use sphinx-build to compile directly to the target directory using xelatex natively
+          sphinx-build -b latex Doc Doc/build/latex -D latex_engine=xelatex
+          
+          # Run the internal compiler build steps
+          make -C Doc/build/latex
 
       - name: Upload PDF Artifact
         uses: actions/upload-artifact@v4
