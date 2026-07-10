@@ -16,27 +16,28 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install System Dependencies
+      - name: Install Minimal System Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texlive-xetex latexmk fonts-freefont-ttf graphviz inkscape
+          # Just installing basic components since the tutorial doesn't use complex SVGs
+          sudo apt-get install -y texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended latexmk
 
       - name: Install Python Dependencies
         run: |
           python -m pip install --upgrade pip
           python -m pip install blurb sphinx
 
-      - name: Build End-to-End PDF Natively
+      - name: Build Only the Tutorial Booklet
         run: |
-          # Use sphinx-build to compile directly to the target directory using xelatex natively
-          sphinx-build -b latex Doc Doc/build/latex -D latex_engine=xelatex
+          # Force Sphinx to strictly target the tutorial directory
+          sphinx-build -b latex Doc Doc/build/latex Doc/tutorial/*.rst
           
-          # Run the internal compiler build steps
+          # Compile the tutorial booklet cleanly
           make -C Doc/build/latex
 
       - name: Upload PDF Artifact
         uses: actions/upload-artifact@v4
         with:
-          name: cpython-pdf-manual
+          name: python-tutorial-pdf
           path: Doc/build/latex/*.pdf
           
