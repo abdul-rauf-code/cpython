@@ -19,7 +19,8 @@ jobs:
       - name: Install System Dependencies
         run: |
           sudo apt-get update
-          sudo apt-get install -y texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texlive-xetex latexmk fonts-freefont-ttf
+          # Adding graphviz and inkscape to convert .svg images natively
+          sudo apt-get install -y texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended texlive-fonts-extra texlive-xetex latexmk fonts-freefont-ttf graphviz inkscape
 
       - name: Install Python Dependencies
         run: |
@@ -32,7 +33,6 @@ jobs:
 
       - name: Compile PDF Documents
         run: |
-          # Force the use of xelatex to correctly resolve large C-API cross-references
           make -C Doc/build/latex PDFLATEX=xelatex
 
       - name: Upload PDF Artifact
