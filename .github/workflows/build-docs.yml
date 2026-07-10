@@ -16,10 +16,9 @@ jobs:
         with:
           python-version: '3.12'
 
-      - name: Install Minimal System Dependencies
+      - name: Install System Dependencies
         run: |
           sudo apt-get update
-          # Just installing basic components since the tutorial doesn't use complex SVGs
           sudo apt-get install -y texlive-latex-recommended texlive-latex-extra texlive-fonts-recommended latexmk
 
       - name: Install Python Dependencies
@@ -27,17 +26,17 @@ jobs:
           python -m pip install --upgrade pip
           python -m pip install blurb sphinx
 
-      - name: Build Only the Tutorial Booklet
+      - name: Build Only the Tutorial Booklet Natively
         run: |
-          # Force Sphinx to strictly target the tutorial directory
-          sphinx-build -b latex Doc Doc/build/latex Doc/tutorial/*.rst
+          # 1. Generate the raw files for the documentation structure
+          sphinx-build -b latex Doc Doc/build/latex
           
-          # Compile the tutorial booklet cleanly
-          make -C Doc/build/latex
+          # 2. Run latexmk directly on the target tutorial file, completely ignoring the global Makefile
+          cd Doc/build/latex && latexmk -pdf -interaction=nonstopmode tutorial.tex
 
       - name: Upload PDF Artifact
         uses: actions/upload-artifact@v4
         with:
           name: python-tutorial-pdf
-          path: Doc/build/latex/*.pdf
+          path: Doc/build/latex/tutorial.pdf
           
