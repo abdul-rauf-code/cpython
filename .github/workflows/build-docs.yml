@@ -28,13 +28,12 @@ jobs:
 
       - name: Build LaTeX Files Directly
         run: |
-          # Bypass the strict Makefile and compile cleanly without -W
           sphinx-build -b latex Doc Doc/build/latex
 
       - name: Compile PDF Documents
         run: |
-          # Step into the generated directory and build the final PDFs
-          make -C Doc/build/latex
+          # Force the use of xelatex to correctly resolve large C-API cross-references
+          make -C Doc/build/latex PDFLATEX=xelatex
 
       - name: Upload PDF Artifact
         uses: actions/upload-artifact@v4
